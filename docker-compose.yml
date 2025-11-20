@@ -1,0 +1,33 @@
+services:
+
+  medallion-services:
+    build:
+      context: services
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "python ./bronze/tickets/tickets.py && \ 
+             python ./silver/silver_process_tickets/input_output_batch.py && \
+             python ./gold/tickets/tickets.py && \
+             python ./gold/snapshots/create_collection.py"
+    container_name: medallion-services
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./services/:/app/
+      - ./medallion-data/bronze/:/bronze/
+      - ./medallion-data/silver/:/silver/
+      - ./medallion-data/silverII/:/silverII/
+      - ./medallion-data/gold/:/gold/
+      - ./medallion-data/goldII/:/goldII/
+      - ./cache/:/cache/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:172.17.0.1"
+    networks:
+      - tron-network
+
+networks:
+  tron-network:
+    driver: bridge

@@ -1,0 +1,7 @@
+**/ticket_*
+*.html
+*.jsonl
+*.json
+**/cache
+**.pkl
+**.txt
